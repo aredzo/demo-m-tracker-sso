@@ -21,3 +21,6 @@ target/
 
 ### OS-related ###
 .DS_Store
+
+### Postgress DB Data
+pgdata/
