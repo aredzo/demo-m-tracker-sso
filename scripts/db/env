@@ -1,0 +1,4 @@
+POSTGRES_USER=mtracker
+POSTGRES_DB=m_tracker
+POSTGRES_PASSWORD=secret
+PGDATA=/pgdata
