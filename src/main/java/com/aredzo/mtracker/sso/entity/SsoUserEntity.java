@@ -3,6 +3,8 @@ package com.aredzo.mtracker.sso.entity;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -35,6 +37,10 @@ public class SsoUserEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserTypeEnum userType;
+
     @OneToMany(
             fetch = FetchType.EAGER,
             mappedBy = "user",
@@ -46,14 +52,16 @@ public class SsoUserEntity {
     public SsoUserEntity() {
     }
 
-    public SsoUserEntity(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
     public SsoUserEntity(String email, String password, Instant validBy) {
         this.email = email;
         this.password = password;
+        this.addToken(validBy);
+    }
+
+    public SsoUserEntity(String email, String password, UserTypeEnum userType, Instant validBy) {
+        this.email = email;
+        this.password = password;
+        this.userType = userType;
         this.addToken(validBy);
     }
 
@@ -95,19 +103,12 @@ public class SsoUserEntity {
         return token;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SsoUserEntity that = (SsoUserEntity) o;
-        return Objects.equals(userId, that.userId) &&
-                Objects.equals(email, that.email) &&
-                Objects.equals(password, that.password);
+    public UserTypeEnum getUserType() {
+        return userType;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, email, password);
+    public void setUserType(UserTypeEnum userType) {
+        this.userType = userType;
     }
 
     @Override
@@ -115,6 +116,25 @@ public class SsoUserEntity {
         return "SsoUserEntity{" +
                 "userId=" + userId +
                 ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", userType=" + userType +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SsoUserEntity that = (SsoUserEntity) o;
+        return Objects.equals(userId, that.userId) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(password, that.password) &&
+                userType == that.userType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, email, password, userType);
+    }
+
 }

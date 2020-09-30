@@ -47,5 +47,30 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="0.0.1-add-user-type-to-table-sso-user" author="oderhunov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="sso_user" columnName="user_type"/>
+            </not>
+        </preConditions>
+
+        <addColumn tableName="sso_user">
+            <column name="user_type" type="varchar(255)"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="0.0.1-add-fk-constrain-to-sso-token" author="oderhunov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_user_id"/>
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint
+                constraintName="fk_user_id"
+                baseTableName="sso_token"
+                baseColumnNames="user_id"
+                referencedTableName="sso_user"
+                referencedColumnNames="user_id"/>
+    </changeSet>
 
 </databaseChangeLog>
