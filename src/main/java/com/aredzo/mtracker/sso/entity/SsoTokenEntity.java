@@ -1,7 +1,11 @@
 package com.aredzo.mtracker.sso.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,15 +22,19 @@ import java.util.UUID;
 public class SsoTokenEntity {
 
     @Id
-    @Column(nullable = false)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
     private UUID token;
 
     @ManyToOne
     @JoinColumn(name = "userId")
     private SsoUserEntity user;
 
-    @Column(nullable = false)
-    private Instant createDate;
+    @CreationTimestamp
+    private Instant createDate = null;
 
     @Column(nullable = false)
     private Instant validBy;
@@ -34,8 +42,7 @@ public class SsoTokenEntity {
     public SsoTokenEntity() {
     }
 
-    public SsoTokenEntity(UUID token, SsoUserEntity user, Instant validBy) {
-        this.token = token;
+    public SsoTokenEntity(SsoUserEntity user, Instant validBy) {
         this.user = user;
         this.validBy = validBy;
     }

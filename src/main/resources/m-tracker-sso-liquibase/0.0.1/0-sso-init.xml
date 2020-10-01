@@ -12,7 +12,7 @@
         </preConditions>
 
         <createTable tableName="sso_user">
-            <column name="user_id" type="integer">
+            <column name="user_id" type="integer" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
             <column name="email" type="varchar(255)">
@@ -20,6 +20,9 @@
             </column>
             <column name="password" type="varchar(255)">
                 <constraints nullable="false" unique="false"/>
+            </column>
+            <column name="user_type" type="varchar(255)">
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
@@ -32,7 +35,7 @@
         </preConditions>
 
         <createTable tableName="sso_token">
-            <column name="token" type="uuid">
+            <column name="token" type="uuid" defaultValueComputed="uid.uuid_generate_v4()">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
             <column name="user_id" type="integer">
@@ -45,18 +48,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
-
-    <changeSet id="0.0.1-add-user-type-to-table-sso-user" author="oderhunov">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="sso_user" columnName="user_type"/>
-            </not>
-        </preConditions>
-
-        <addColumn tableName="sso_user">
-            <column name="user_type" type="varchar(255)"></column>
-        </addColumn>
     </changeSet>
 
     <changeSet id="0.0.1-add-fk-constrain-to-sso-token" author="oderhunov">

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -33,7 +34,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @Api(value = "Sso user private controller", tags = "private")
-@RequestMapping(value = "/v1/int/", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/v1/int", produces = MediaType.APPLICATION_JSON_VALUE)
 @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
         @ApiResponse(code = 404, message = "User Not Found", response = ErrorResponse.class),
@@ -69,7 +70,7 @@ public class SsoPrivateController {
         }
     }
 
-    @GetMapping("/users/")
+    @GetMapping("/users")
     @ApiOperation("Get all registered user")
     public List<UserResponse> getAllUsers(@RequestHeader(name = "authorization") UUID serviceToken) {
         if (ssoService.validateToken(serviceToken).getUserType().equals(UserTypeEnum.SERVICE)) {
@@ -79,11 +80,11 @@ public class SsoPrivateController {
         }
     }
 
-    @GetMapping("/token/{userToken}")
+    @GetMapping("/token")
     @ApiOperation("Validate user token and get userId")
     public ValidateTokenResponse validateUserToken(
             @RequestHeader(name = "authorization") UUID serviceToken,
-            @NotNull @PathVariable UUID userToken) {
+            @RequestParam(name = "token") UUID userToken) {
         if (ssoService.validateToken(serviceToken).getUserType().equals(UserTypeEnum.SERVICE)) {
             return ssoService.validateToken(userToken);
         } else {

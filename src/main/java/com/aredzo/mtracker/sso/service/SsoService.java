@@ -13,6 +13,8 @@ import com.aredzo.mtracker.sso.exception.SsoServiceException;
 import com.aredzo.mtracker.sso.repository.SsoTokenRepository;
 import com.aredzo.mtracker.sso.repository.SsoUserRepository;
 import org.mapstruct.factory.Mappers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,6 +32,7 @@ public class SsoService {
     private final SsoUserRepository ssoUserRepository;
     private final SsoTokenRepository ssoTokenRepository;
     private final SsoUserMapper ssoUserMapper;
+    private static final Logger log = LoggerFactory.getLogger(SsoService.class);
 
 
     public SsoService(SsoUserRepository ssoUserRepository, SsoTokenRepository ssoTokenRepository) {
@@ -39,8 +42,9 @@ public class SsoService {
     }
 
     public UserTokenResponse addNewUser(String email, String password, UserTypeEnum userType) {
-        SsoUserEntity user = ssoUserRepository.save(new SsoUserEntity(email, password, userType, Instant.now().plus(7, ChronoUnit.DAYS)));
+        log.info(String.format("Adding new user with email: %s, password: %s, usertype: %s", email, password, userType.getText()));
 
+        SsoUserEntity user = ssoUserRepository.save(new SsoUserEntity(email, password, userType, Instant.now().plus(7, ChronoUnit.DAYS)));
         return new UserTokenResponse(
                 user.getUserId(),
                 user.getEmail(),
@@ -56,17 +60,20 @@ public class SsoService {
     }
 
     public TokenResponse login(String email, String password) {
+        log.info(String.format("User logins with email: %s, password: %s", email, password));
+
         SsoUserEntity user = getUserByEmail(email);
         if (!user.getPassword().equals(password)) {
             throw new SsoServiceException(SsoServiceError.NOT_AUTHORIZED);
         }
-        SsoTokenEntity token = user.addToken(Instant.now().plus(7, ChronoUnit.DAYS));
-        ssoUserRepository.save(user);
+        SsoTokenEntity token = ssoTokenRepository.save(user.addToken(Instant.now().plus(7, ChronoUnit.DAYS)));
         return new TokenResponse(token.getToken(), token.getValidBy());
     }
 
     public ValidateTokenResponse validateToken(UUID token) {
-        SsoUserEntity user = ssoTokenRepository.findByTokenAndValidByBefore(token, Instant.now()).
+        log.info(String.format("Validating token: %s", token.toString()));
+
+        SsoUserEntity user = ssoTokenRepository.findByTokenAndValidByAfter(token, Instant.now()).
                 orElseThrow(() -> new SsoServiceException(SsoServiceError.NOT_AUTHORIZED))
                 .getUser();
         return new ValidateTokenResponse(user.getUserId(), user.getUserType());

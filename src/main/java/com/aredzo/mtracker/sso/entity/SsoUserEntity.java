@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -14,7 +16,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Table(
@@ -28,7 +29,7 @@ import java.util.UUID;
 public class SsoUserEntity {
 
     @Id
-    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer userId;
 
     @Column(nullable = false)
@@ -98,7 +99,7 @@ public class SsoUserEntity {
     }
 
     public SsoTokenEntity addToken(Instant validBy){
-        SsoTokenEntity token = new SsoTokenEntity(UUID.randomUUID(), this, validBy);
+        SsoTokenEntity token = new SsoTokenEntity(this, validBy);
         tokens.add(token);
         return token;
     }

@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface SsoTokenRepository extends JpaRepository<SsoTokenEntity, UUID> {
 
-    List<SsoTokenEntity> findAllByUserUserIdAndValidByBefore(Integer userId, Instant validBy);
+    List<SsoTokenEntity> findAllByUserUserIdAndValidByAfter(Integer userId, Instant validBy);
 
-    Optional<SsoTokenEntity> findByTokenAndValidByBefore(UUID token, Instant validBy);
+    Optional<SsoTokenEntity> findByTokenAndValidByAfter(UUID token, Instant validBy);
 
 
 }
