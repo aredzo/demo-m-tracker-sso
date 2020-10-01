@@ -104,6 +104,12 @@ public class SsoUserEntity {
         return token;
     }
 
+    public SsoTokenEntity removeToken(SsoTokenEntity token){
+        tokens.remove(token);
+        token.setUser(null);
+        return token;
+    }
+
     public UserTypeEnum getUserType() {
         return userType;
     }
