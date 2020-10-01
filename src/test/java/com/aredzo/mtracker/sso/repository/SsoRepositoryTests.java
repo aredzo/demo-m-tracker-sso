@@ -45,7 +45,7 @@ public class SsoRepositoryTests {
     @Before
     public void setUp() {
         userRepository.deleteAll();
-        tokenRepository.deleteAll();;
+        tokenRepository.deleteAll();
         userRepository.save(user1);
         userRepository.save(user2);
 
@@ -82,7 +82,7 @@ public class SsoRepositoryTests {
     }
 
     @Test
-    public void tokenRepositoryFindByTokenAndValidDateReturnsOnlyIfValidTest(){
+    public void tokenRepositoryFindByTokenAndValidDateReturnsOnlyIfValidTest() {
         SsoTokenEntity user2ValidToken = user2.getTokens().get(0);
         SsoTokenEntity user2InvalidToken = user2.addToken(Instant.now().minus(30, ChronoUnit.MINUTES));
 
