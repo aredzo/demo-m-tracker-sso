@@ -31,6 +31,7 @@ public class SsoTokenEntity {
     private UUID token;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
     private SsoUserEntity user;
 
     @CreationTimestamp

@@ -6,6 +6,8 @@ import com.aredzo.mtracker.sso.dto.UserPostRequest;
 import com.aredzo.mtracker.sso.dto.UserResponse;
 import com.aredzo.mtracker.sso.dto.UserTokenResponse;
 import com.aredzo.mtracker.sso.dto.ValidateTokenResponse;
+import com.aredzo.mtracker.sso.dto.mapper.SsoUserMapper;
+import com.aredzo.mtracker.sso.entity.SsoTokenEntity;
 import com.aredzo.mtracker.sso.entity.UserTypeEnum;
 import com.aredzo.mtracker.sso.exception.SsoServiceError;
 import com.aredzo.mtracker.sso.exception.SsoServiceException;
@@ -14,6 +16,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.mapstruct.factory.Mappers;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,9 +47,11 @@ import java.util.UUID;
 public class SsoPrivateController {
 
     private final SsoService ssoService;
+    private final SsoUserMapper mapper;
 
     public SsoPrivateController(SsoService ssoService) {
         this.ssoService = ssoService;
+        this.mapper = Mappers.getMapper(SsoUserMapper.class);
     }
 
     @PostMapping("/users/signup")
@@ -60,23 +65,22 @@ public class SsoPrivateController {
     public UserResponse getUserByUserId(
             @RequestHeader(name = "authorization") UUID token,
             @NotNull @NotEmpty @PathVariable int userId) {
-        ValidateTokenResponse validateTokenResponse = ssoService.validateToken(token);
-        if (
-                validateTokenResponse.getUserId() == userId ||
-                        validateTokenResponse.getUserType().equals(UserTypeEnum.SERVICE)) {
-            return ssoService.getUserWithId(userId);
+
+        SsoTokenEntity tokenEntity = ssoService.validateTokenAndGetTokenEntity(token);
+        if (tokenEntity.getUser().getUserId() == userId || tokenEntity.getUser().getUserType().equals(UserTypeEnum.SERVICE)) {
+            return mapper.ssoUserEntityToResponse(tokenEntity.getUser());
         } else {
-            throw new SsoServiceException(SsoServiceError.NOT_AUTHORIZED);
+            throw new SsoServiceException(SsoServiceError.USER_NOT_AUTHORIZED);
         }
     }
 
     @GetMapping("/users")
     @ApiOperation("Get all registered user")
     public List<UserResponse> getAllUsers(@RequestHeader(name = "authorization") UUID serviceToken) {
-        if (ssoService.validateToken(serviceToken).getUserType().equals(UserTypeEnum.SERVICE)) {
+        if (ssoService.validateTokenAndGetTokenEntity(serviceToken).getUser().getUserType().equals(UserTypeEnum.SERVICE)) {
             return ssoService.getAllUsers();
         } else {
-            throw new SsoServiceException(SsoServiceError.NOT_AUTHORIZED);
+            throw new SsoServiceException(SsoServiceError.USER_NOT_AUTHORIZED);
         }
     }
 
@@ -85,10 +89,8 @@ public class SsoPrivateController {
     public ValidateTokenResponse validateUserToken(
             @RequestHeader(name = "authorization") UUID serviceToken,
             @RequestParam(name = "token") UUID userToken) {
-        if (ssoService.validateToken(serviceToken).getUserType().equals(UserTypeEnum.SERVICE)) {
-            return ssoService.validateToken(userToken);
-        } else {
-            throw new SsoServiceException(SsoServiceError.NOT_AUTHORIZED);
-        }
+        ssoService.validateServiceToken(serviceToken);
+        return mapper.ssoUserEntityToValidateTokenResponse(ssoService.validateTokenAndGetTokenEntity(userToken).getUser());
+
     }
 }

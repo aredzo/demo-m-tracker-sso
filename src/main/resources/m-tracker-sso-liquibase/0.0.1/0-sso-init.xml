@@ -27,6 +27,8 @@
         </createTable>
     </changeSet>
 
+
+
     <changeSet id="0.0.1-create-table-sso-token" author="oderhunov">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -34,8 +36,12 @@
             </not>
         </preConditions>
 
+        <sql dbms="postgresql" endDelimiter=";" stripComments="true" splitStatements="true">
+            CREATE EXTENSION IF NOT EXISTS "uuid-ossp"
+        </sql>
+
         <createTable tableName="sso_token">
-            <column name="token" type="uuid" defaultValueComputed="uid.uuid_generate_v4()">
+            <column name="token" type="uuid" defaultValueComputed="uuid_generate_v4()">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
             <column name="user_id" type="integer">

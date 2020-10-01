@@ -2,6 +2,7 @@ package com.aredzo.mtracker.sso.dto.mapper;
 
 
 import com.aredzo.mtracker.sso.dto.UserResponse;
+import com.aredzo.mtracker.sso.dto.ValidateTokenResponse;
 import com.aredzo.mtracker.sso.entity.SsoUserEntity;
 import org.mapstruct.Mapper;
 
@@ -9,4 +10,6 @@ import org.mapstruct.Mapper;
 public interface SsoUserMapper {
 
     UserResponse ssoUserEntityToResponse(SsoUserEntity ssoUserEntity);
+
+    ValidateTokenResponse ssoUserEntityToValidateTokenResponse(SsoUserEntity ssoUserEntity);
 }

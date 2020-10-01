@@ -104,21 +104,20 @@ public class SsoServiceTests {
 
     @Test
     public void validateValidTokenTest() {
-        ValidateTokenResponse response = ssoService.validateToken(user1.getTokens().get(0).getToken());
+        SsoTokenEntity tokenEntity = ssoService.validateTokenAndGetTokenEntity(user1.getTokens().get(0).getToken());
 
-        assertThat(response.getUserId()).isEqualTo(user1.getUserId());
-        assertThat(response.getUserType()).isEqualTo(user1.getUserType());
+        assertThat(tokenEntity.getUser()).isEqualTo(user1);
     }
 
 
     @Test(expected = SsoServiceException.class)
     public void validateUnknownTokenTest() {
-        ValidateTokenResponse response = ssoService.validateToken(UUID.randomUUID());
+        ssoService.validateTokenAndGetTokenEntity(UUID.randomUUID());
     }
 
     @Test(expected = SsoServiceException.class)
     public void validateExpiredTokenTest() {
         SsoTokenEntity expiredToken = tokenRepository.save(user1.addToken(Instant.now().minus(30, ChronoUnit.MINUTES)));
-        ValidateTokenResponse response = ssoService.validateToken(expiredToken.getToken());
+        ssoService.validateTokenAndGetTokenEntity(expiredToken.getToken());
     }
 }
