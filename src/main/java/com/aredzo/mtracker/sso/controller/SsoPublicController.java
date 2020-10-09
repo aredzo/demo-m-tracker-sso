@@ -23,7 +23,7 @@ import javax.validation.Valid;
 @Validated
 @RestController
 @Api(value = "Sso user public controller", tags = "public")
-@RequestMapping(value = "/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/sso/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 @ApiResponses(value = {
         @ApiResponse(code = 400, message = "Bad Request", response = ErrorResponse.class),
         @ApiResponse(code = 404, message = "User Not Found", response = ErrorResponse.class),
