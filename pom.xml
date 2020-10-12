@@ -23,6 +23,7 @@
     <io.springfox.version>2.9.2</io.springfox.version>
     <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
     <spring-cloud-contract.version>2.0.2.RELEASE</spring-cloud-contract.version>
+    <contract.source>REMOTE</contract.source>
   </properties>
 
   <dependencies>
@@ -105,7 +106,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
   <build>
     <plugins>
       <plugin>
@@ -154,8 +154,9 @@
             <groupId>com.aredzo</groupId>
             <artifactId>mtracker-sso-external-contracts</artifactId>
           </contractDependency>
-          <!-- The JAR with contracts should be taken from Maven local -->
-          <contractsMode>LOCAL</contractsMode>
+
+          <contractsMode>${contract.source}</contractsMode>
+          <contractsRepositoryUrl>https://dl.bintray.com/aredzo/mtracker</contractsRepositoryUrl>
           <!-- Base package for generated tests -->
           <basePackageForTests>com.aredzo.mtracker.sso.contract</basePackageForTests>
         </configuration>
