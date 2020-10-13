@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app-sso:
+    image: m-tracker-sso:latest
+    container_name: mtracker-sso
+    restart: always
+    env_file: ./env
+    ports:
+      - "8081:8080"
+    networks:
+      - mtracker-network
+
+networks:
+  mtracker-network:
+    external: true
